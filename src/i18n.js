@@ -83,6 +83,12 @@ const resources = {
         q35: "35. Email (if you have one):",
         q36: "36. Which city/town do you live in?",
         q37: "37. Which neighborhood/area?",
+        q38: "38. Would you be willing to pay a small extra charge (5–10%) to access medicines and health products 24/7?",
+        q39: "39. What price range do you find reasonable for common medicines (e.g., painkillers, vitamins)?",
+        q40: "40. Would you trust a medical vending machine supervised by a licensed pharmacy or doctor?",
+        q41: "41. Would you trust a vending machine that dispenses medicines via an app or QR code if the packaging is sealed and verified?",
+},
+
       },
 
       // --- Options (Defined by Question Key and sanitized option value) ---
@@ -120,7 +126,7 @@ const resources = {
         q32: { yesiminterested: "Yes, I'm interested", no: "No", maybe: "Maybe" },
       },
     },
-  },
+  
 
   // Moroccan Arabic (Darija)
   ma: {
@@ -204,6 +210,10 @@ const resources = {
         q35: "35. الإيميل (إلا عندك):",
         q36: "36. شنو المدينة/البلدة لي ساكن فيها؟",
         q37: "37. شنو الحي/المنطقة؟",
+        q38: "38. واش مستعد/ة تخلص شوية زيادة (5–10%) باش توصل للأدوية والمنتوجات الصحية 24/7؟",
+        q39: "39. شنو النطاق السعري لي كتشوف معقول للأدوية العادية (بحال مسكنات الألم، الفيتامينات)؟",
+        q40: "40. واش تتيق ف آلة بيع الأدوية لي تحت إشراف صيدلية مرخصة أو طبيب؟",
+        q41: "41. واش تتيق ف آلة بيع الأدوية لي كتوزع الدوا عبر تطبيق أو QR code إلا كانت العلبة مختومة ومحققة؟",
       },
 
       // --- Options (Defined by Question Key and sanitized option value) ---

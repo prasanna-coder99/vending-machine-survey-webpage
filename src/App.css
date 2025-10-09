@@ -10,3 +10,27 @@ input:-webkit-autofill:active {
     -webkit-box-shadow: 0 0 0 30px #4b5563 inset !important; 
     -webkit-text-fill-color: #e5e7eb !important; 
 }
+html, body, #root {
+  height: 100%;
+  margin: 0;
+  overscroll-behavior-y: contain; /* prevents bouncing at the top/bottom */
+  overflow-y: auto;               /* allows normal scrolling */
+  -webkit-overflow-scrolling: auto; /* stops iOS momentum bounce */
+}
+@font-face {
+  font-family:Satoshi;
+ src:url('../public/fonts/Satoshi-Bold.otf');
+  src: url(../public/fonts/Satoshi-BlackItalic.otf);
+  src:url(../public/fonts/Satoshi-Bold.otf);
+
+}
+*{
+  font-family:Satoshi;
+  
+}
+html, body {
+  height: 100%;
+  margin: 0;
+  overflow: hidden; 
+}
+

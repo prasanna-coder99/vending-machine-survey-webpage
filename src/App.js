@@ -1,6 +1,13 @@
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
+import emailjs from 'emailjs-com';
+import NafLogoGif from "./assets/NafLogo.json";
+
 import "./i18n"; 
+import Lottie from "lottie-react";
+
+
+// ... (rest of the component logic and data remains the same)
 
 // The sections are now just keys, not the full English titles
 const sectionKeys = [
@@ -76,6 +83,10 @@ const surveyQuestions = {
     { key: "email", type: "text", questionKey: "questions.q35", required: false },
     { key: "city", type: "text", questionKey: "questions.q36", required: true },
     { key: "neighborhood", type: "text", questionKey: "questions.q37", required: true },
+    { key: "willingPayExtra", type: "radio", questionKey: "questions.q38", options: ["Yes", "No", "Maybe"], required: true },
+    { key: "priceRange", type: "text", questionKey: "questions.q39", required: true },
+    { key: "trustSupervisedMachine", type: "radio", questionKey: "questions.q40", options: ["Yes", "No", "Maybe"], required: true },
+    { key: "trustAppVending", type: "radio", questionKey: "questions.q41", options: ["Yes", "No", "Maybe"], required: true },
   ],
 };
 
@@ -105,6 +116,10 @@ const getOptionKey = (text) => {
 
 
 const App = () => {
+  const SERVICE_ID = "service_rsffzz7"; //  Service ID
+  const TEMPLATE_ID = "template_b2fmoe3"; //  Template ID
+  const PUBLIC_KEY = "RbiH3FHNdDfJZ9G3A"; // Public Key Id
+
   const { t, i18n } = useTranslation();
   const [language, setLanguage] = useState(i18n.language);
   const [sectionIndex, setSectionIndex] = useState(0);
@@ -197,19 +212,48 @@ const App = () => {
     setErrors({});
     setSectionIndex(prev => prev - 1);
   };
-
+  
   const handleSubmit = (e) => {
-    e.preventDefault();
-    
-    markSectionTouched(sectionIndex);
+  e.preventDefault();
+  markSectionTouched(sectionIndex);
 
-    if (validateSection(sectionIndex)) {
-      console.log("Form Data:", formData);
-      setSuccessPopup(true);
-      setTimeout(() => setSuccessPopup(false), 2000);
-      setErrors({}); 
-    }
-  };
+  if (validateSection(sectionIndex)) {
+    console.log("Form Data:", formData);
+
+    // Prepare message for email
+    let message = "";
+    Object.keys(formData).forEach((key) => {
+      const value = formData[key];
+      if (Array.isArray(value)) {
+        message += `${key}: ${value.join(", ")}\n`;
+      } else {
+        message += `${key}: ${value}\n`;
+      }
+    });
+
+    // EmailJS data
+    const emailData = {
+      to_name: "Survey Admin", // Receiver Name
+      from_name: formData.userName || "Anonymous", // Sender Name
+      message: message, // Form data as text
+      reply_to: formData.email || "no-reply@example.com",
+    };
+
+    // Send email via EmailJS
+    emailjs.send(SERVICE_ID, TEMPLATE_ID, emailData, PUBLIC_KEY)
+      .then((response) => {
+        console.log("✅ Email sent successfully!", response.status, response.text);
+        setSuccessPopup(true);
+        setTimeout(() => setSuccessPopup(false), 2000);
+        setErrors({});
+      })
+      .catch((error) => {
+        console.error("❌ Failed to send email:", error);
+        alert("Email sending failed. Check console for details.");
+      });
+  }
+};
+
 
   const currentSectionKey = sectionKeys[sectionIndex];
   const englishSectionName = getEnglishSectionName(currentSectionKey);
@@ -220,28 +264,126 @@ const App = () => {
   // Dynamically get the translated section title
   const translatedSectionTitle = t(`sections.${currentSectionKey}`);
 
+  // Create an array of language options with their values and display keys
+  const languageOptions = [
+    { value: "en", displayKey: "English" },
+    { value: "ma", displayKey: "Moroccan" },
+  ];
+
+  // Language Selector Component
+const LanguageSelectorPill = ({ currentLang, changeLang, options, t }) => {
+  const currentOption = options.find(opt => opt.value === currentLang);
+  const otherOptions = options.filter(opt => opt.value !== currentLang);
 
   return (
-    <div className="min-h-screen bg-gray-800 flex flex-col items-center px-4 py-8 sm:px-6"> 
-      {/* Language Selector */}
-      <div className="flex justify-end w-full max-w-2xl mx-auto mb-6">
-        <label className="mr-2 font-medium text-gray-400">{t("selectLanguage")}:</label>
-        <select
-          value={language}
-          onChange={(e) => changeLanguage(e.target.value)}
-          className="border border-gray-600 bg-gray-700 text-white rounded px-2 py-1"
+    <div className="relative inline-block group">
+      {/* Pill Container */}
+      <button
+        type="button"
+        className="flex items-center bg-[#282C34] border border-white rounded-full h-10 pr-4 pl-1.5 cursor-pointer shadow-xl outline-none"
+      >
+        {/* Icon Circle */}
+        <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center mr-2">
+          <span className="text-[#6c5ce7] text-2xl font-bold">文A</span>
+        </div>
+
+        {/* Current Language Text */}
+        <span className="text-white font-medium mr-2 text-sm">
+          {t(currentOption.displayKey)}
+        </span>
+
+        {/* Dropdown Arrow */}
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          className="h-4 w-4 text-gray-400"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+          strokeWidth={2}
         >
-          {/* FIX: Use only the translated strings */}
-          <option value="en">{t("langEnglish")}</option>
-          <option value="ma">{t("langMoroccan")}</option>
-        </select>
+          <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+        </svg>
+      </button>
+
+      {/* Dropdown Menu */}
+      <div className="absolute right-0 mt-2 w-32 bg-gray-700 rounded-lg shadow-xl opacity-0 invisible bg:gray-700 group-hover:opacity-100 group-focus-within:opacity-100 group-focus-within:visible transition-opacity duration-200 z-50">
+        {otherOptions.map((opt) => (
+          <button
+            key={opt.value}
+            onClick={() => changeLang(opt.value)}
+            className="block w-full text-left px-4 py-2 text-white hover:bg-gray-600 rounded-lg"
+          >
+            {t(opt.displayKey)}
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+
+
+  return (
+    // Add pt-20 to the main container to account for the fixed language selector's height
+    <div className="min-h-screen bg-gray-800 flex flex-col items-center px-4 pt-20 pb-8 sm:px-6"> 
+      
+      {/* Language Selector - FIXED AT TOP */}
+      <div className="fixed top-0 left-0 w-full z-50 py-3 px-4 flex justify-end">
+    {/* A container to keep the pill aligned with the max-width of the form */}
+   <div className="w-full max-w-2xl">
+  <div className="relative inline-block group">
+    <button 
+      type="button"
+      className="flex items-center bg-[#282C34] border border-white rounded-full h-10 pr-4 pl-1.5 cursor-pointer shadow-xl outline-none"
+    >
+      <div className="p-5">
+        {/* Icon Circle (White) */}
+        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 28 28" fill="none">
+          <rect width="28" height="28" rx="14" fill="white"/>
+          <path d="M13.9201 20.0765L16.5404 13.1658H17.7498L20.3701 20.0765H19.1607L18.5416 18.32H15.7485L15.1295 20.0765H13.9201ZM9.37051 18.3488L8.56425 17.5425L11.4725 14.6343C11.1366 14.2983 10.8317 13.9144 10.558 13.4825C10.2843 13.0506 10.0324 12.5611 9.80243 12.014H11.0118C11.2038 12.3883 11.3957 12.7146 11.5877 12.993C11.7797 13.2713 12.01 13.5497 12.2788 13.828C12.5955 13.5113 12.9244 13.0673 13.2653 12.496C13.6062 11.9247 13.8629 11.3801 14.0353 10.8622H7.64282V9.71038H11.6741V8.55859H12.8259V9.71038H16.8571V10.8622H15.187C14.9855 11.5532 14.6831 12.2635 14.28 12.993C13.8769 13.7224 13.4786 14.2791 13.085 14.6631L14.4672 16.074L14.0353 17.2546L12.2788 15.4549L9.37051 18.3488ZM16.1085 17.3122H18.1817L17.1451 14.3751L16.1085 17.3122Z" fill="#4C33DB"/>
+        </svg>
       </div>
 
-      {/* Header */}
+      {/* Current Language Text */}
+      <span className="text-white font-medium mr-2 text-sm">
+        {t(languageOptions.find(opt => opt.value === language)?.displayKey) || language}
+      </span>
+
+      {/* Dropdown Arrow */}
+      <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+      </svg>
+    </button>  {/* <-- Make sure this button is properly closed */}
+
+    {/* Dropdown Menu - appears on hover/focus */}
+    <div className="absolute right-0 mt-2 w-32 opacity-0 invisible group-hover:opacity-100 group-focus-within:opacity-100 group-focus-within:visible transition-opacity duration-200 z-50">
+      {languageOptions.map((opt) => (
+        opt.value !== language && (
+          <button
+            key={opt.value}
+            onClick={() => changeLanguage(opt.value)}
+            className="block w-full text-left px-4 py-2 text-white bg-gray-800 hover:bg-gray-700 text-sm"
+          >
+            {opt.displayKey} {/* English shown in dropdown */}
+          </button>
+        )
+      ))}
+    </div>
+  </div>
+</div>
+</div>
+
+    
+      {/* Header (Adjusted the w-full max-w-2xl mx-auto mb-6 from the old selector) */}
       {sectionIndex === 0 && (
         <div className="flex flex-col items-center mb-8 w-full max-w-2xl">
           <div className="w-20 h-20 mb-4 rounded-full flex items-center justify-center shadow-lg">
-            <img src="./logo.gif" alt="Logo" className="w-full h-full object-cover rounded-full" />
+         <Lottie
+          animationData={NafLogoGif}
+          className="w-full h-full"
+          loop
+          autoplay
+        />
           </div>
           <h1 className="text-2xl sm:text-3xl font-bold text-white mb-4 text-center">{t("heading")}</h1>
           <div className="w-full lg:w-[660px] mx-auto">
@@ -262,67 +404,70 @@ const App = () => {
     </div>
   )}
 
-  {/* --- Special Handling for Final Section (Stay in Touch) --- */}
-  {isFinalSection ? (
+  {/*Final Section (Stay in Touch)*/}
+{isFinalSection ? (
     <div className="space-y-6 pt-4">
-      {currentQuestions.map((q) => (
-        <div key={q.key} className=" pb-4">
-          <p className="text-white font-normal text-base mb-2">
-            {t(q.questionKey)}
-            {q.required && <span className="text-red-500">*</span>}
-          </p>
+        {currentQuestions.map((q) => (
+            <div key={q.key} className=" pb-4">
+                <p className="text-white font-normal text-base mb-2">
+                    {t(q.questionKey)}
+                    {q.required && <span className="text-red-500">*</span>}
+                </p>
 
-          {/* Radio fields (for "tryService" question) */}
-          {q.type === "radio" && (
-            <div className="flex flex-col space-y-2">
-              {q.options.map((option, i) => (
-                <label
-                  key={i}
-                  className="text-gray-300 text-sm sm:text-base flex items-center space-x-2"
-                >
-                  <input
-                    type="radio"
-                    name={q.key}
-                    value={option}
-                    checked={formData[q.key] === option}
-                    onChange={(e) => handleChange(q.key, e.target.value)}
-                    onBlur={() =>
-                      setTouched((prev) => ({ ...prev, [q.key]: true }))
-                    }
-                    className="accent-[#3ED025]"
-                  />
-                 <span>{getTranslatedOption(q.questionKey, option)}</span>
-                </label>
-              ))}
-              {touched[q.key] && errors[q.key] && (
-                <p className="text-red-500 text-sm mt-1">{errors[q.key]}</p>
-              )}
-            </div>
-          )}
+                {/* Radio fields (for "tryService" question and 38, 40, 41) */}
+                {q.type === "radio" && (
+                    // FIX: Add the grey box class here
+                    <div className="bg-gray-700 rounded-sm p-3 sm:p-4 space-y-2">
+                        <div className="flex flex-col space-y-2">
+                            {q.options.map((option, i) => (
+                                <label
+                                    key={i}
+                                    className="text-gray-300 text-sm sm:text-base flex items-center space-x-2"
+                                >
+                                    <input
+                                        type="radio"
+                                        name={q.key}
+                                        value={option}
+                                        checked={formData[q.key] === option}
+                                        onChange={(e) => handleChange(q.key, e.target.value)}
+                                        onBlur={() =>
+                                            setTouched((prev) => ({ ...prev, [q.key]: true }))
+                                        }
+                                        className="accent-[#3ED025]"
+                                    />
+                                    <span>{getTranslatedOption(q.questionKey, option)}</span>
+                                </label>
+                            ))}
+                        </div>
+                        {touched[q.key] && errors[q.key] && (
+                            <p className="text-red-500 text-sm mt-1">{errors[q.key]}</p>
+                        )}
+                    </div>
+                )}
 
-          {/* Text inputs (name, phone, email, etc.) */}
-          {q.type === "text" && (
-            <div className="flex flex-col space-y-2">
-              <input
-                type="text"
-                name={q.key}
-                value={formData[q.key] || ""}
-                onChange={(e) => handleChange(q.key, e.target.value)}
-                onBlur={() =>
-                  setTouched((prev) => ({ ...prev, [q.key]: true }))
-                }
-                className="w-full p-2  rounded bg-gray-700 text-white placeholder-gray-400 focus:outline-none"
-               
-              />
-              {touched[q.key] && errors[q.key] && (
-                <p className="text-red-500 text-sm mt-1">{errors[q.key]}</p>
-              )}
+                {/* Text inputs (name, phone, email, etc.) */}
+                {q.type === "text" && (
+                    <div className="flex flex-col space-y-2">
+                        <input
+                            type="text"
+                            name={q.key}
+                            value={formData[q.key] || ""}
+                            onChange={(e) => handleChange(q.key, e.target.value)}
+                            onBlur={() =>
+                                setTouched((prev) => ({ ...prev, [q.key]: true }))
+                            }
+                            // FIX: Added the grey box styling directly to the input for text fields
+                            className="w-full p-2 rounded bg-gray-700 text-white placeholder-gray-400 focus:outline-none"
+                        />
+                        {touched[q.key] && errors[q.key] && (
+                            <p className="text-red-500 text-sm mt-1">{errors[q.key]}</p>
+                        )}
+                    </div>
+                )}
             </div>
-          )}
-        </div>
-      ))}
+        ))}
     </div>
-  ) : (
+) :  (
     /* --- Standard Block Layout for Sections A–H --- */
     currentQuestions.map((q) => {
       const value = formData[q.key] || "";
@@ -396,23 +541,23 @@ const App = () => {
 
             {/* 'Other' input for radioOther */}
           {q.type === "radioOther" && (
-           <div className="flex items-center text-gray-300 mt-1 text-sm sm:text-base">
-             <input
-               type="radio"
-               name={q.key}
-               value="OtherOption"
-               checked={isOtherSelected}
-               onChange={() => handleChange(q.key, "")}
-               className="form-radio h-4 w-4 accent-[#3ED025] bg-transparent" />
-            <span className="ml-2 mr-2">{t("otherOptionLabel")}</span>
-           <input
-             type="text"
-             value={isOtherSelected ? value : ""}
-             onChange={(e) => handleChange(q.key, e.target.value)}
-             className="flex-1 bg-gray-700 text-gray-200 border-0 rounded-sm px-2 py-1 text-sm"
+             <div className="flex items-center text-gray-300 mt-1 text-sm sm:text-base">
+               <input
+                type="radio"
+                name={q.key}
+                value="OtherOption"
+                checked={isOtherSelected}
+                onChange={() => handleChange(q.key, "")}
+                className="form-radio h-4 w-4 accent-[#3ED025] bg-transparent" />
+             <span className="ml-2 mr-2">{t("otherOptionLabel")}</span>
+            <input
+              type="text"
+              value={isOtherSelected ? value : ""}
+              onChange={(e) => handleChange(q.key, e.target.value)}
+              className="flex-1 bg-gray-700 text-gray-200 border-0 rounded-sm px-2 py-1 text-sm"
             />
-            </div>
-            )}
+             </div>
+             )}
 
             {/* Text and Textarea Inputs */}
             {(q.type === "text" || q.type === "textarea") && (
