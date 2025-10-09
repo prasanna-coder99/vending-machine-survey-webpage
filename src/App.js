@@ -7,7 +7,6 @@ import "./i18n";
 import Lottie from "lottie-react";
 
 
-// ... (rest of the component logic and data remains the same)
 
 // The sections are now just keys, not the full English titles
 const sectionKeys = [
@@ -213,43 +212,66 @@ const App = () => {
     setSectionIndex(prev => prev - 1);
   };
   
-  const handleSubmit = (e) => {
+const handleSubmit = (e) => {
   e.preventDefault();
   markSectionTouched(sectionIndex);
 
   if (validateSection(sectionIndex)) {
     console.log("Form Data:", formData);
 
-    // Prepare message for email
-    let message = "";
+    // Create HTML table from form data
+    let message_html = `<h3 style="font-family: Arial, sans-serif;">Survey Submission</h3>
+      <table border="1" cellpadding="8" cellspacing="0" style="border-collapse: collapse; width:100%; font-family: Arial, sans-serif;">
+        <thead style="background-color: #f0f0f0;">
+          <tr>
+            <th style="text-align: left;">Question</th>
+            <th style="text-align: left;">Answer</th>
+          </tr>
+        </thead>
+        <tbody>
+    `;
+
     Object.keys(formData).forEach((key) => {
-      const value = formData[key];
-      if (Array.isArray(value)) {
-        message += `${key}: ${value.join(", ")}\n`;
-      } else {
-        message += `${key}: ${value}\n`;
+      let questionText = key;
+      for (const section in surveyQuestions) {
+        const q = surveyQuestions[section].find((q) => q.key === key);
+        if (q) {
+          questionText = t(q.questionKey);
+          break;
+        }
       }
+      const value = formData[key];
+      const displayValue = Array.isArray(value) ? value.join(", ") : value || "";
+      message_html += `
+        <tr>
+          <td style="font-weight:bold; background-color:#fafafa;">${questionText}</td>
+          <td>${displayValue}</td>
+        </tr>
+      `;
     });
 
-    // EmailJS data
+    message_html += `</tbody></table>`;
+
+    // Prepare email data
     const emailData = {
-      to_name: "Survey Admin", // Receiver Name
-      from_name: formData.userName || "Anonymous", // Sender Name
-      message: message, // Form data as text
-      reply_to: formData.email || "no-reply@example.com",
+      name: formData.userName || "Participant",
+      message_html: message_html,
+      reply_to: formData.email || "no-reply@ldintertech.com",
     };
 
-    // Send email via EmailJS
+    // Send using EmailJS
     emailjs.send(SERVICE_ID, TEMPLATE_ID, emailData, PUBLIC_KEY)
-      .then((response) => {
-        console.log("✅ Email sent successfully!", response.status, response.text);
+      .then((result) => {
+        console.log("✅ Email sent successfully:", result.text);
+
+       
         setSuccessPopup(true);
-        setTimeout(() => setSuccessPopup(false), 2000);
-        setErrors({});
+
+        setTimeout(() => setSuccessPopup(false), 1000);
       })
       .catch((error) => {
         console.error("❌ Failed to send email:", error);
-        alert("Email sending failed. Check console for details.");
+
       });
   }
 };
@@ -353,7 +375,7 @@ const LanguageSelectorPill = ({ currentLang, changeLang, options, t }) => {
       <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
         <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
       </svg>
-    </button>  {/* <-- Make sure this button is properly closed */}
+    </button>  
 
     {/* Dropdown Menu - appears on hover/focus */}
     <div className="absolute right-0 mt-2 w-32 opacity-0 invisible group-hover:opacity-100 group-focus-within:opacity-100 group-focus-within:visible transition-opacity duration-200 z-50">
@@ -416,7 +438,7 @@ const LanguageSelectorPill = ({ currentLang, changeLang, options, t }) => {
 
                 {/* Radio fields (for "tryService" question and 38, 40, 41) */}
                 {q.type === "radio" && (
-                    // FIX: Add the grey box class here
+                    
                     <div className="bg-gray-700 rounded-sm p-3 sm:p-4 space-y-2">
                         <div className="flex flex-col space-y-2">
                             {q.options.map((option, i) => (
@@ -623,11 +645,11 @@ const LanguageSelectorPill = ({ currentLang, changeLang, options, t }) => {
         </button>
       ) : (
         <button
-          type="submit"
-          className="w-20 sm:w-24 h-10 border border-white bg-blue-600 text-white rounded shadow-md text-sm font-medium"
+        type="submit"
+        className="w-20 sm:w-24 h-10 border border-white bg-blue-600 text-white rounded shadow-md text-sm font-medium"
         >
-          {t("submit")}
-        </button>
+       {t("submit")}
+       </button>
       )}
     </div>
   </div>
