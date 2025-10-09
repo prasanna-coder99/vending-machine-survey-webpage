@@ -14,9 +14,7 @@ const sectionKeys = [
   "h",
   "i",
 ];
-
-// NOTE: surveyQuestions remains unchanged as it defines the static English keys for data storage.
-// ... (surveyQuestions object remains unchanged) ...
+{/*Survey questions */}
 const surveyQuestions = {
   "A: About You": [
     { key: "age", type: "radio", questionKey: "questions.q1", options: ["Under 18", "18-25", "26-40", "41-60", "Over 60"], required: true },
@@ -256,189 +254,240 @@ const App = () => {
       )}
 
       <form onSubmit={handleSubmit} className="w-full max-w-2xl mx-auto space-y-8">
-        {sectionIndex > 0 && (
-          <div className="w-full text-center py-4 mb-8">
-          
-            <h2 className="text-xl font-semibold text-[#3ED025]">{translatedSectionTitle}</h2>
-          </div>
-        )}
+  {sectionIndex > 0 && (
+    <div className="w-full text-center py-4 mb-8">
+      <h2 className="text-xl font-semibold text-white">
+        {translatedSectionTitle}
+      </h2>
+    </div>
+  )}
 
-        {/* --- Dynamic Question Rendering (Logic remains the same) --- */}
-        {currentQuestions.map(q => {
-          const value = formData[q.key] || "";
-          const isOtherSelected = q.type === "radioOther" && value && !q.options?.includes(value);
-          const otherTextValue = q.type === "radioOther" && isOtherSelected ? value : "";
+  {/* --- Special Handling for Final Section (Stay in Touch) --- */}
+  {isFinalSection ? (
+    <div className="space-y-6 pt-4">
+      {currentQuestions.map((q) => (
+        <div key={q.key} className=" pb-4">
+          <p className="text-white font-normal text-base mb-2">
+            {t(q.questionKey)}
+            {q.required && <span className="text-red-500">*</span>}
+          </p>
 
-        {isFinalSection && (
-  <div className="space-y-6 pt-4" dir={i18n.language === 'ma' ? 'rtl' : 'ltr'}>
-    {currentQuestions.map((q) => (
-      <div key={q.key} className="border-b border-gray-600 pb-4">
-        {q.type === "radio" && (
-          <div className="flex flex-col space-y-2">
-            <p className="text-white font-normal text-base mb-2">
-              {t(q.questionKey)}{q.required && <span className="text-red-500">*</span>}
-            </p>
-            {q.options.map((option, i) => (
-              <label key={i} className="text-gray-300 text-sm sm:text-base flex items-center space-x-2">
-                <input
-                  type="radio"
-                  name={q.key}
-                  value={option}
-                  checked={formData[q.key] === option}
-                  onChange={(e) => handleChange(q.key, e.target.value)}
-                  onBlur={() => setTouched((prev) => ({ ...prev, [q.key]: true }))}
-                  className="accent-[#3ED025]"
-                />
-                <span>{t(option)}</span>
-              </label>
-            ))}
-            {touched[q.key] && errors[q.key] && (
-              <p className="text-red-500 text-sm mt-1">{errors[q.key]}</p>
-            )}
-          </div>
-        )}
-
-        {q.type === "text" && (
-          <div className="flex flex-col space-y-2">
-            <p className="text-white font-normal text-base mb-2">
-              {t(q.questionKey)}{q.required && <span className="text-red-500">*</span>}
-            </p>
-            <input
-              type="text"
-              name={q.key}
-              value={formData[q.key] || ""}
-              onChange={(e) => handleChange(q.key, e.target.value)}
-              onBlur={() => setTouched((prev) => ({ ...prev, [q.key]: true }))}
-              className="w-full p-2 border border-gray-600 rounded bg-gray-700 text-white placeholder-gray-400 focus:outline-none focus:border-[#3ED025]"
-              placeholder={t('Enter your answer here')}
-            />
-            {touched[q.key] && errors[q.key] && (
-              <p className="text-red-500 text-sm mt-1">{errors[q.key]}</p>
-            )}
-          </div>
-        )}
-      </div>
-    ))}
-  </div>
-)}
- // --- Standard Block Layout for All Other Sections (A-H) ---
-          return (
-            <div key={q.key} className="mb-6" dir={i18n.language === 'ma' ? 'rtl' : 'ltr'}>
-              <label className="text-white mb-2 block font-normal text-sm sm:text-base">
-                {t(q.questionKey)}{q.required && <span className="text-red-500">*</span>}
-              </label>
-
-              <div className="bg-gray-700 rounded-sm p-3 sm:p-4 space-y-2">
-                
-                {/* Radio and Checkbox Options */}
-                {q.type !== "text" && q.type !== "textarea" && q.options.map(opt => {
-                    const translatedOption = getTranslatedOption(q.questionKey, opt);
-                    
-                    if (q.type === "radio" || (q.type === "radioOther" && opt !== "Other")) {
-                      return (
-                        <label key={opt} className="flex items-center text-gray-300 cursor-pointer text-sm sm:text-base">
-                          <input type="radio" name={q.key} value={opt} checked={value === opt}
-                            onChange={(e) => handleChange(q.key, e.target.value)}
-                            className="form-radio h-4 w-4 accent-[#3ED025] bg-transparent" />
-                          <span className="ml-3">{translatedOption}</span>
-                        </label>
-                      );
-                    } 
-                    
-                    if (q.type === "checkbox") {
-                      const selectedValues = formData[q.key] || [];
-                      return (
-                        <label key={opt} className="flex items-center text-gray-300 cursor-pointer text-sm sm:text-base">
-                          <input type="checkbox" name={q.key} value={opt} checked={selectedValues.includes(opt)}
-                            onChange={() => toggleCheckbox(q.key, opt)}
-                            className="form-checkbox h-4 w-4 accent-[#3ED025] bg-transparent" />
-                          <span className="ml-3">{translatedOption}</span>
-                        </label>
-                      );
+          {/* Radio fields (for "tryService" question) */}
+          {q.type === "radio" && (
+            <div className="flex flex-col space-y-2">
+              {q.options.map((option, i) => (
+                <label
+                  key={i}
+                  className="text-gray-300 text-sm sm:text-base flex items-center space-x-2"
+                >
+                  <input
+                    type="radio"
+                    name={q.key}
+                    value={option}
+                    checked={formData[q.key] === option}
+                    onChange={(e) => handleChange(q.key, e.target.value)}
+                    onBlur={() =>
+                      setTouched((prev) => ({ ...prev, [q.key]: true }))
                     }
-
-                    return null;
-                })}
-                
-                {/* 'Other' Input for radioOther Type */}
-                {q.type === "radioOther" && (
-                  <div className="flex items-center text-gray-300 mt-1 text-sm sm:text-base">
-                    <input type="radio" name={q.key} value="OtherOption" checked={isOtherSelected}
-                      onChange={() => handleChange(q.key, "")} 
-                      className="form-radio h-4 w-4 accent-[#3ED025] bg-transparent" />
-                    
-                    <span className="ml-2 mr-2">{t('otherOptionLabel')}:</span>
-                    
-                    <input type="text" 
-                      value={isOtherSelected ? value : ""} 
-                      onChange={(e) => handleChange(q.key, e.target.value)}
-                      onFocus={() => {
-                        if (!isOtherSelected) {
-                          handleChange(q.key, otherTextValue || ""); 
-                        }
-                      }}
-                      placeholder={t('pleaseSpecifyPlaceholder')}
-                      className="flex-1 bg-gray-700 text-gray-200 border-0 rounded-sm px-2 py-1 text-sm" /> 
-                  </div>
-                )}
-
-                {/* Text and Textarea Inputs (Standard) */}
-                {(q.type === "text" || q.type === "textarea") && !isFinalSection && (
-                  q.type === "text" ? (
-                    <input
-                      type="text"
-                      value={value}
-                      onChange={(e) => handleChange(q.key, e.target.value)}
-                      placeholder={t('enterHerePlaceholder')}
-                      className="w-full bg-gray-700 text-gray-200 border-0 rounded-sm px-2 py-1 text-sm"
-                    />
-                  ) : (
-                    <textarea
-                      value={value}
-                      onChange={(e) => handleChange(q.key, e.target.value)}
-                      placeholder={t('enterHerePlaceholder')}
-                      rows="3"
-                      className="w-full bg-gray-700 text-gray-200 border-0 rounded-sm px-2 py-1 text-sm"
-                    />
-                  )
-                )}
-              </div>
-
-              {touched[q.key] && errors[q.key] && !isFinalSection && (
+                    className="accent-[#3ED025]"
+                  />
+                 <span>{getTranslatedOption(q.questionKey, option)}</span>
+                </label>
+              ))}
+              {touched[q.key] && errors[q.key] && (
                 <p className="text-red-500 text-sm mt-1">{errors[q.key]}</p>
               )}
             </div>
-          );
-        })}
-
-        {/* Navigation */}
-        <div className="relative flex items-center pt-2" dir={i18n.language === 'ma' ? 'rtl' : 'ltr'}>
-          {sectionIndex > 0 && (
-            <button type="button" onClick={prevSection}
-              className="absolute left-0 border border-gray-400 bg-gray-100 text-gray-800 rounded shadow-md text-sm font-medium py-2 px-3 sm:px-4">
-              {t("back")}
-            </button>
           )}
 
-          <div className="flex-1 text-center">
-            <span className="text-sm sm:text-base text-gray-400 font-normal">{sectionIndex + 1} / {totalSections}</span>
-          </div>
+          {/* Text inputs (name, phone, email, etc.) */}
+          {q.type === "text" && (
+            <div className="flex flex-col space-y-2">
+              <input
+                type="text"
+                name={q.key}
+                value={formData[q.key] || ""}
+                onChange={(e) => handleChange(q.key, e.target.value)}
+                onBlur={() =>
+                  setTouched((prev) => ({ ...prev, [q.key]: true }))
+                }
+                className="w-full p-2  rounded bg-gray-700 text-white placeholder-gray-400 focus:outline-none"
+               
+              />
+              {touched[q.key] && errors[q.key] && (
+                <p className="text-red-500 text-sm mt-1">{errors[q.key]}</p>
+              )}
+            </div>
+          )}
+        </div>
+      ))}
+    </div>
+  ) : (
+    /* --- Standard Block Layout for Sections A–H --- */
+    currentQuestions.map((q) => {
+      const value = formData[q.key] || "";
+      const isOtherSelected =
+        q.type === "radioOther" && value && !q.options?.includes(value);
+      const otherTextValue =
+        q.type === "radioOther" && isOtherSelected ? value : "";
 
-          <div className="absolute right-0">
-            {sectionIndex < totalSections - 1 ? (
-              <button type="button" onClick={nextSection}
-                className="w-20 sm:w-24 h-10 border border-gray-400 bg-gray-100 text-gray-800 rounded shadow-md hover:shadow-lg hover:bg-white transition-all duration-200 text-sm font-medium">
-                {t("next")}
-              </button>
-            ) : (
-              <button type="submit"
-                className="w-20 sm:w-24 h-10 border border-white bg-blue-600 text-white rounded shadow-md transition-all duration-200 text-sm font-medium">
-                {t("submit")}
-              </button>
+      return (
+        <div
+          key={q.key}
+          className="mb-6"
+          dir={i18n.language === "ma" ? "rtl" : "ltr"}
+        >
+          <label className="text-white mb-2 block font-normal text-sm sm:text-base">
+            {t(q.questionKey)}
+            {q.required && <span className="text-red-500">*</span>}
+          </label>
+
+          <div className="bg-gray-700 rounded-sm p-3 sm:p-4 space-y-2">
+            {/* Radio & Checkbox Options */}
+            {q.type !== "text" &&
+              q.type !== "textarea" &&
+              q.options.map((opt) => {
+                const translatedOption = getTranslatedOption(
+                  q.questionKey,
+                  opt
+                );
+
+                if (q.type === "radio" || (q.type === "radioOther" && opt !== "Other")) {
+                  return (
+                    <label
+                      key={opt}
+                      className="flex items-center text-gray-300 cursor-pointer text-sm sm:text-base"
+                    >
+                      <input
+                        type="radio"
+                        name={q.key}
+                        value={opt}
+                        checked={value === opt}
+                        onChange={(e) => handleChange(q.key, e.target.value)}
+                        className="form-radio h-4 w-4 accent-[#3ED025] bg-transparent"
+                      />
+                      <span className="ml-3">{translatedOption}</span>
+                    </label>
+                  );
+                }
+
+                if (q.type === "checkbox") {
+                  const selectedValues = formData[q.key] || [];
+                  return (
+                    <label
+                      key={opt}
+                      className="flex items-center text-gray-300 cursor-pointer text-sm sm:text-base"
+                    >
+                      <input
+                        type="checkbox"
+                        name={q.key}
+                        value={opt}
+                        checked={selectedValues.includes(opt)}
+                        onChange={() => toggleCheckbox(q.key, opt)}
+                        className="form-checkbox h-4 w-4 accent-[#3ED025] bg-transparent"
+                      />
+                      <span className="ml-3">{translatedOption}</span>
+                    </label>
+                  );
+                }
+
+                return null;
+              })}
+
+            {/* 'Other' input for radioOther */}
+          {q.type === "radioOther" && (
+           <div className="flex items-center text-gray-300 mt-1 text-sm sm:text-base">
+             <input
+               type="radio"
+               name={q.key}
+               value="OtherOption"
+               checked={isOtherSelected}
+               onChange={() => handleChange(q.key, "")}
+               className="form-radio h-4 w-4 accent-[#3ED025] bg-transparent" />
+            <span className="ml-2 mr-2">{t("otherOptionLabel")}</span>
+           <input
+             type="text"
+             value={isOtherSelected ? value : ""}
+             onChange={(e) => handleChange(q.key, e.target.value)}
+             className="flex-1 bg-gray-700 text-gray-200 border-0 rounded-sm px-2 py-1 text-sm"
+            />
+            </div>
+            )}
+
+            {/* Text and Textarea Inputs */}
+            {(q.type === "text" || q.type === "textarea") && (
+              <>
+                {q.type === "text" ? (
+                  <input
+                    type="text"
+                    value={value}
+                    onChange={(e) => handleChange(q.key, e.target.value)}
+                    placeholder={t("enterHerePlaceholder")}
+                    className="w-full bg-gray-700 text-gray-200 border-0 rounded-sm px-2 py-1 text-sm"
+                  />
+                ) : (
+                  <textarea
+                    value={value}
+                    onChange={(e) => handleChange(q.key, e.target.value)}
+                    placeholder={t("enterHerePlaceholder")}
+                    rows="3"
+                    className="w-full bg-gray-700 text-gray-200 border-0 rounded-sm px-2 py-1 text-sm"
+                  />
+                )}
+              </>
             )}
           </div>
+
+          {touched[q.key] && errors[q.key] && (
+            <p className="text-red-500 text-sm mt-1">{errors[q.key]}</p>
+          )}
         </div>
-      </form>
+      );
+    })
+  )}
+
+  {/* Navigation Buttons */}
+  <div
+    className="relative flex items-center pt-2"
+    dir={i18n.language === "ma" ? "rtl" : "ltr"}
+  >
+    {sectionIndex > 0 && (
+      <button
+        type="button"
+        onClick={prevSection}
+        className="absolute left-0 border border-gray-400 bg-gray-100 text-gray-800 rounded shadow-md text-sm font-medium py-2 px-3 sm:px-4"
+      >
+        {t("back")}
+      </button>
+    )}
+
+    <div className="flex-1 text-center">
+      <span className="text-sm sm:text-base text-gray-400 font-normal">
+        {sectionIndex + 1} / {totalSections}
+      </span>
+    </div>
+
+    <div className="absolute right-0">
+      {sectionIndex < totalSections - 1 ? (
+        <button
+          type="button"
+          onClick={nextSection}
+          className="w-20 sm:w-24 h-10 border border-gray-400 bg-gray-100 text-gray-800 rounded shadow-mdtext-sm font-medium"
+        >
+          {t("next")}
+        </button>
+      ) : (
+        <button
+          type="submit"
+          className="w-20 sm:w-24 h-10 border border-white bg-blue-600 text-white rounded shadow-md text-sm font-medium"
+        >
+          {t("submit")}
+        </button>
+      )}
+    </div>
+  </div>
+</form>
+
 
       {successPopup && (
         <div className="fixed top-4 right-4 bg-green-600 text-white px-4 py-2 rounded-lg shadow-md animate-fade-in">

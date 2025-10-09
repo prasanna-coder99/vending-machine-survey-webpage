@@ -3,3 +3,10 @@
 @tailwind utilities;
 
 
+input:-webkit-autofill,
+input:-webkit-autofill:hover, 
+input:-webkit-autofill:focus, 
+input:-webkit-autofill:active {
+    -webkit-box-shadow: 0 0 0 30px #4b5563 inset !important; 
+    -webkit-text-fill-color: #e5e7eb !important; 
+}
