@@ -263,11 +263,11 @@ const handleSubmit = (e) => {
     emailjs.send(SERVICE_ID, TEMPLATE_ID, emailData, PUBLIC_KEY)
       .then((result) => {
         console.log("✅ Email sent successfully:", result.text);
-
+       window.location.reload();
        
         setSuccessPopup(true);
 
-        setTimeout(() => setSuccessPopup(false), 1000);
+        setTimeout(() => setSuccessPopup(false), 4000);
       })
       .catch((error) => {
         console.error("❌ Failed to send email:", error);
@@ -656,11 +656,12 @@ const LanguageSelectorPill = ({ currentLang, changeLang, options, t }) => {
 </form>
 
 
-      {successPopup && (
-        <div className="fixed top-4 right-4 bg-green-600 text-white px-4 py-2 rounded-lg shadow-md animate-fade-in">
-          {t("formSubmitted")}
-        </div>
-      )}
+     {successPopup && (
+  <div className="fixed top-10 left-1/2 transform -translate-x-1/2 bg-green-600 text-white px-6 py-3 rounded-lg shadow-md animate-fade-in w-80 text-center">
+    {t("formSubmitted")}
+  </div>
+)}
+
 
       <style>{`
         @keyframes fade-in {
