@@ -77,16 +77,54 @@ const surveyQuestions = {
   ],
   "I: Stay in Touch": [
     { key: "tryService", type: "radio", questionKey: "questions.q32", options: ["Yes, I'm interested", "No", "Maybe"], required: true },
-    { key: "userName", type: "text", questionKey: "questions.q33", required: true },
-    { key: "phoneNumber", type: "text", questionKey: "questions.q34", required: true },
-    { key: "email", type: "text", questionKey: "questions.q35", required: false },
-    { key: "city", type: "text", questionKey: "questions.q36", required: true },
-    { key: "neighborhood", type: "text", questionKey: "questions.q37", required: true },
-    { key: "willingPayExtra", type: "radio", questionKey: "questions.q38", options: ["Yes", "No", "Maybe"], required: true },
-    { key: "priceRange", type: "text", questionKey: "questions.q39", required: true },
-    { key: "trustSupervisedMachine", type: "radio", questionKey: "questions.q40", options: ["Yes", "No", "Maybe"], required: true },
-    { key: "trustAppVending", type: "radio", questionKey: "questions.q41", options: ["Yes", "No", "Maybe"], required: true },
-  ],
+    {  key: "willingPayExtra", type: "radio",  questionKey: "questions.q33",  options: ["Yes", "No", "Maybe"],   required: true },
+     { key: "priceRange", type: "text", questionKey: "questions.q34", required: true },
+    { 
+    key: "trustSupervisedMachine", 
+    type: "radio", 
+    questionKey: "questions.q35", 
+    options: ["Yes", "No", "Maybe"], 
+    required: true 
+  },
+  
+    { 
+    key: "trustAppVending", 
+    type: "radio", 
+    questionKey: "questions.q36", 
+    options: ["Yes", "No", "Maybe"], 
+    required: true 
+  },
+  { 
+    key: "userName", 
+    type: "text", 
+    questionKey: "questions.q37", 
+    required: true 
+  },
+  { 
+    key: "phoneNumber", 
+    type: "text", 
+    questionKey: "questions.q38", 
+    required: false 
+  },
+  { 
+    key: "email", 
+    type: "text", 
+    questionKey: "questions.q39", 
+    required: false 
+  },
+  { 
+    key: "city", 
+    type: "text", 
+    questionKey: "questions.q40", 
+    required: true 
+  },
+  { 
+    key: "neighborhood", 
+    type: "text", 
+    questionKey: "questions.q41", 
+    required: true 
+  },
+],
 };
 
 
@@ -352,7 +390,7 @@ const LanguageSelectorPill = ({ currentLang, changeLang, options, t }) => {
       {/* Language Selector - FIXED AT TOP */}
       <div className="fixed top-0 left-0 w-full z-50 py-3 px-4 flex justify-end">
     {/* A container to keep the pill aligned with the max-width of the form */}
-   <div className="w-full max-w-2xl">
+   <div className="w-full flex justify-end">
   <div className="relative inline-block group">
     <button 
       type="button"
@@ -384,9 +422,9 @@ const LanguageSelectorPill = ({ currentLang, changeLang, options, t }) => {
           <button
             key={opt.value}
             onClick={() => changeLanguage(opt.value)}
-            className="block w-full text-left px-4 py-2 text-white bg-gray-800 hover:bg-gray-700 text-sm"
+            className="block w-full text-left px-4 py-2 text-[#C2C2C4] bg-gray-800 hover:bg-gray-700 text-sm"
           >
-            {opt.displayKey} {/* English shown in dropdown */}
+            {opt.displayKey} 
           </button>
         )
       ))}
@@ -396,7 +434,7 @@ const LanguageSelectorPill = ({ currentLang, changeLang, options, t }) => {
 </div>
 
     
-      {/* Header (Adjusted the w-full max-w-2xl mx-auto mb-6 from the old selector) */}
+      {/*Header */}
       {sectionIndex === 0 && (
         <div className="flex flex-col items-center mb-8 w-full max-w-2xl">
           <div className="w-20 h-20 mb-4 rounded-full flex items-center justify-center shadow-lg">
@@ -407,7 +445,7 @@ const LanguageSelectorPill = ({ currentLang, changeLang, options, t }) => {
           autoplay
         />
           </div>
-          <h1 className="text-2xl sm:text-3xl font-bold text-white mb-4 text-center">{t("heading")}</h1>
+          <h1 className="text-2xl sm:text-3xl font-bold text-[#C2C2C4] mb-4 text-center">{t("heading")}</h1>
           <div className="w-full lg:w-[660px] mx-auto">
             <img src="./image.png" alt="Header Image" className="w-full h-25 object-cover rounded-lg shadow-md" />
           </div>
@@ -417,7 +455,7 @@ const LanguageSelectorPill = ({ currentLang, changeLang, options, t }) => {
         </div>
       )}
 
-      <form onSubmit={handleSubmit} className="w-full max-w-2xl mx-auto space-y-8">
+  <form onSubmit={handleSubmit} className="w-full max-w-2xl mx-auto space-y-8">
   {sectionIndex > 0 && (
     <div className="w-full text-center py-4 mb-8">
       <h2 className="text-xl font-semibold text-white">
@@ -431,23 +469,23 @@ const LanguageSelectorPill = ({ currentLang, changeLang, options, t }) => {
     <div className="space-y-6 pt-4">
         {currentQuestions.map((q) => (
             <div key={q.key} className=" pb-4">
-                <p className="text-white font-normal text-base mb-2">
+                <p className="text-[#C2C2C4] font-normal text-base mb-2">
                     {t(q.questionKey)}
                     {q.required && <span className="text-red-500">*</span>}
                 </p>
 
                 {/* Radio fields (for "tryService" question and 38, 40, 41) */}
                 {q.type === "radio" && (
-                    
+                   <> 
                     <div className="bg-gray-700 rounded-sm p-3 sm:p-4 space-y-2">
                         <div className="flex flex-col space-y-2">
                             {q.options.map((option, i) => (
                                 <label
                                     key={i}
-                                    className="text-gray-300 text-sm sm:text-base flex items-center space-x-2"
+                                    className="text-[#C2C2C4] text-sm sm:text-base flex items-center space-x-2"
                                 >
-                                    <input
-                                        type="radio"
+                                 <input
+                                       type="radio"
                                         name={q.key}
                                         value={option}
                                         checked={formData[q.key] === option}
@@ -461,11 +499,12 @@ const LanguageSelectorPill = ({ currentLang, changeLang, options, t }) => {
                                 </label>
                             ))}
                         </div>
-                        {touched[q.key] && errors[q.key] && (
-                            <p className="text-red-500 text-sm mt-1">{errors[q.key]}</p>
+                        </div>
+                         {touched[q.key] && errors[q.key] && (
+                         <p className="text-red-500 text-sm mt-1">{errors[q.key]}</p>
                         )}
-                    </div>
-                )}
+                         </>
+                      )}
 
                 {/* Text inputs (name, phone, email, etc.) */}
                 {q.type === "text" && (
@@ -479,7 +518,7 @@ const LanguageSelectorPill = ({ currentLang, changeLang, options, t }) => {
                                 setTouched((prev) => ({ ...prev, [q.key]: true }))
                             }
                             // FIX: Added the grey box styling directly to the input for text fields
-                            className="w-full p-2 rounded bg-gray-700 text-white placeholder-gray-400 focus:outline-none"
+                            className="w-full p-2 rounded bg-gray-700 text-[#C2C2C4] placeholder-gray-400 focus:outline-none"
                         />
                         {touched[q.key] && errors[q.key] && (
                             <p className="text-red-500 text-sm mt-1">{errors[q.key]}</p>
@@ -504,7 +543,7 @@ const LanguageSelectorPill = ({ currentLang, changeLang, options, t }) => {
           className="mb-6"
           dir={i18n.language === "ma" ? "rtl" : "ltr"}
         >
-          <label className="text-white mb-2 block font-normal text-sm sm:text-base">
+          <label className="text-[#C2C2C4] mb-2 block font-normal text-sm sm:text-base">
             {t(q.questionKey)}
             {q.required && <span className="text-red-500">*</span>}
           </label>
@@ -523,7 +562,7 @@ const LanguageSelectorPill = ({ currentLang, changeLang, options, t }) => {
                   return (
                     <label
                       key={opt}
-                      className="flex items-center text-gray-300 cursor-pointer text-sm sm:text-base"
+                      className="flex items-center text-[#C2C2C4] cursor-pointer text-sm sm:text-base"
                     >
                       <input
                         type="radio"
@@ -543,7 +582,7 @@ const LanguageSelectorPill = ({ currentLang, changeLang, options, t }) => {
                   return (
                     <label
                       key={opt}
-                      className="flex items-center text-gray-300 cursor-pointer text-sm sm:text-base"
+                      className="flex items-center text-[#C2C2C4] cursor-pointer text-sm sm:text-base"
                     >
                       <input
                         type="checkbox"
@@ -563,7 +602,7 @@ const LanguageSelectorPill = ({ currentLang, changeLang, options, t }) => {
 
             {/* 'Other' input for radioOther */}
           {q.type === "radioOther" && (
-             <div className="flex items-center text-gray-300 mt-1 text-sm sm:text-base">
+             <div className="flex items-center text-[#C2C2C4] mt-1 text-sm sm:text-base">
                <input
                 type="radio"
                 name={q.key}
@@ -576,7 +615,7 @@ const LanguageSelectorPill = ({ currentLang, changeLang, options, t }) => {
               type="text"
               value={isOtherSelected ? value : ""}
               onChange={(e) => handleChange(q.key, e.target.value)}
-              className="flex-1 bg-gray-700 text-gray-200 border-0 rounded-sm px-2 py-1 text-sm"
+              className="flex-1 bg-gray-700 text-[#C2C2C4] border-0 rounded-sm px-2 py-1 text-sm"
             />
              </div>
              )}
@@ -590,7 +629,7 @@ const LanguageSelectorPill = ({ currentLang, changeLang, options, t }) => {
                     value={value}
                     onChange={(e) => handleChange(q.key, e.target.value)}
                     placeholder={t("enterHerePlaceholder")}
-                    className="w-full bg-gray-700 text-gray-200 border-0 rounded-sm px-2 py-1 text-sm"
+                    className="w-full bg-gray-700 text-[#C2C2C4] border-0 rounded-sm px-2 py-1 text-sm"
                   />
                 ) : (
                   <textarea
@@ -598,12 +637,13 @@ const LanguageSelectorPill = ({ currentLang, changeLang, options, t }) => {
                     onChange={(e) => handleChange(q.key, e.target.value)}
                     placeholder={t("enterHerePlaceholder")}
                     rows="3"
-                    className="w-full bg-gray-700 text-gray-200 border-0 rounded-sm px-2 py-1 text-sm"
+                    className="w-full bg-gray-700 text-[#C2C2C4] border-0 rounded-sm px-2 py-1 text-sm"
                   />
                 )}
               </>
             )}
           </div>
+          
 
           {touched[q.key] && errors[q.key] && (
             <p className="text-red-500 text-sm mt-1">{errors[q.key]}</p>
@@ -622,7 +662,7 @@ const LanguageSelectorPill = ({ currentLang, changeLang, options, t }) => {
       <button
         type="button"
         onClick={prevSection}
-        className="absolute left-0 border border-gray-400 bg-gray-100 text-gray-800 rounded shadow-md text-sm font-medium py-2 px-3 sm:px-4"
+        className="absolute left-0 border border-gray-400 bg-gray-100 text-gray-700 rounded shadow-md text-sm font-medium py-2 px-3 sm:px-4"
       >
         {t("back")}
       </button>
@@ -639,7 +679,7 @@ const LanguageSelectorPill = ({ currentLang, changeLang, options, t }) => {
         <button
           type="button"
           onClick={nextSection}
-          className="w-20 sm:w-24 h-10 border border-gray-400 bg-gray-100 text-gray-800 rounded shadow-mdtext-sm font-medium"
+          className="w-20 sm:w-24 h-10 border border-gray-400 bg-gray-100 text-gray-800 rounded shadow-md text-sm font-medium"
         >
           {t("next")}
         </button>
