@@ -77,53 +77,15 @@ const surveyQuestions = {
   ],
   "I: Stay in Touch": [
     { key: "tryService", type: "radio", questionKey: "questions.q32", options: ["Yes, I'm interested", "No", "Maybe"], required: true },
-    {  key: "willingPayExtra", type: "radio",  questionKey: "questions.q33",  options: ["Yes", "No", "Maybe"],   required: true },
-     { key: "priceRange", type: "text", questionKey: "questions.q34", required: true },
-    { 
-    key: "trustSupervisedMachine", 
-    type: "radio", 
-    questionKey: "questions.q35", 
-    options: ["Yes", "No", "Maybe"], 
-    required: true 
-  },
-  
-    { 
-    key: "trustAppVending", 
-    type: "radio", 
-    questionKey: "questions.q36", 
-    options: ["Yes", "No", "Maybe"], 
-    required: true 
-  },
-  { 
-    key: "userName", 
-    type: "text", 
-    questionKey: "questions.q37", 
-    required: true 
-  },
-  { 
-    key: "phoneNumber", 
-    type: "text", 
-    questionKey: "questions.q38", 
-    required: false 
-  },
-  { 
-    key: "email", 
-    type: "text", 
-    questionKey: "questions.q39", 
-    required: false 
-  },
-  { 
-    key: "city", 
-    type: "text", 
-    questionKey: "questions.q40", 
-    required: true 
-  },
-  { 
-    key: "neighborhood", 
-    type: "text", 
-    questionKey: "questions.q41", 
-    required: true 
-  },
+    { key: "willingPayExtra", type: "radio",  questionKey: "questions.q33",  options: ["Yes", "No", "Maybe"],   required: true },
+    { key: "priceRange", type: "text", questionKey: "questions.q34", required: true },
+    { key: "trustSupervisedMachine", type: "radio",  questionKey: "questions.q35", options: ["Yes", "No", "Maybe"], required: true },
+    { key: "trustAppVending", type: "radio",  questionKey: "questions.q36", options: ["Yes", "No", "Maybe"], required: true },
+    { key: "userName",type: "text",  questionKey: "questions.q37",  required: true },
+    { key: "phoneNumber", type: "text",  questionKey: "questions.q38",  required: false },
+    { key: "email", type: "text", questionKey: "questions.q39",  required: false },
+    {key: "city", type: "text", questionKey: "questions.q40",  required: true },
+    { key: "neighborhood", type: "text", questionKey: "questions.q41", required: true},
 ],
 };
 
@@ -257,7 +219,7 @@ const handleSubmit = (e) => {
   if (validateSection(sectionIndex)) {
     console.log("Form Data:", formData);
 
-    // Create HTML table from form data
+    //  HTML table from form data
     let message_html = `<h3 style="font-family: Arial, sans-serif;">Survey Submission</h3>
       <table border="1" cellpadding="8" cellspacing="0" style="border-collapse: collapse; width:100%; font-family: Arial, sans-serif;">
         <thead style="background-color: #f0f0f0;">
@@ -321,10 +283,10 @@ const handleSubmit = (e) => {
   const totalSections = sectionKeys.length;
   const isFinalSection = sectionIndex === totalSections - 1;
 
-  // Dynamically get the translated section title
+  //  translated section title
   const translatedSectionTitle = t(`sections.${currentSectionKey}`);
 
-  // Create an array of language options with their values and display keys
+  //  array of language options with their values and display keys
   const languageOptions = [
     { value: "en", displayKey: "English" },
     { value: "ma", displayKey: "Moroccan" },
@@ -397,7 +359,7 @@ const LanguageSelectorPill = ({ currentLang, changeLang, options, t }) => {
       className="flex items-center bg-[#282C34] border border-white rounded-full h-10 pr-4 pl-1.5 cursor-pointer shadow-xl outline-none"
     >
       <div className="p-5">
-        {/* Icon Circle (White) */}
+        {/* Icon Circle */}
         <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 28 28" fill="none">
           <rect width="28" height="28" rx="14" fill="white"/>
           <path d="M13.9201 20.0765L16.5404 13.1658H17.7498L20.3701 20.0765H19.1607L18.5416 18.32H15.7485L15.1295 20.0765H13.9201ZM9.37051 18.3488L8.56425 17.5425L11.4725 14.6343C11.1366 14.2983 10.8317 13.9144 10.558 13.4825C10.2843 13.0506 10.0324 12.5611 9.80243 12.014H11.0118C11.2038 12.3883 11.3957 12.7146 11.5877 12.993C11.7797 13.2713 12.01 13.5497 12.2788 13.828C12.5955 13.5113 12.9244 13.0673 13.2653 12.496C13.6062 11.9247 13.8629 11.3801 14.0353 10.8622H7.64282V9.71038H11.6741V8.55859H12.8259V9.71038H16.8571V10.8622H15.187C14.9855 11.5532 14.6831 12.2635 14.28 12.993C13.8769 13.7224 13.4786 14.2791 13.085 14.6631L14.4672 16.074L14.0353 17.2546L12.2788 15.4549L9.37051 18.3488ZM16.1085 17.3122H18.1817L17.1451 14.3751L16.1085 17.3122Z" fill="#4C33DB"/>
